@@ -39,11 +39,15 @@
                 <h2>Ingrédients et Mesures</h2>
                 <ul class="ingredients-list">
                     {% for i in range(1, 16) %}
-                        {% if details['strIngredient' ~ i] and details['strIngredient' ~ i] != 'nan' %}
+                        {% set ingredient = details.get('strIngredient' ~ i) %}
+                        {% set measure = details.get('strMeasure' ~ i) %}
+                        {% if ingredient and ingredient != 'nan' %}
                             <li>
-                                <span class="ingredient">{{ details['strIngredient' ~ i] }}</span>
-                                {% if details['strMeasure' ~ i] and details['strMeasure' ~ i] != 'nan' %}
-                                    <span class="measure">{{ details['strMeasure' ~ i] }}</span>
+                                <span class="ingredient">{{ ingredient }}</span>
+                                {% if measure and measure != 'nan' %}
+                                    <span class="measure">{{ measure }}</span>
+                                {% else %}
+                                    <span class="measure">À goût</span>  <!-- Ou une autre chaîne de votre choix -->
                                 {% endif %}
                             </li>
                         {% endif %}

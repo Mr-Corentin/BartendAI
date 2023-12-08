@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Swipe</title>
+</head>
+<body>
+    <h1>{{ recipe.name }}</h1>
+    <p>{{ recipe.description }}</p>
+    <!-- Ajoutez plus de détails sur la recette ici -->
+
+    <form method="post" action="{{ url_for('like') }}">
+        <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+        <button type="submit">Like</button>
+    </form>
+
+    <form method="post" action="{{ url_for('pass_recipe') }}">
+        <button type="submit">Pass</button>
+    </form>
+</body>
+</html>

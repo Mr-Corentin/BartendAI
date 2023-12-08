@@ -1,0 +1,121 @@
+header {
+    display: flex;
+    justify-content: space-between; /* Répartir le contenu aux extrémités */
+    align-items: center;
+    max-width: 1200px; /* Ajustez cette valeur en fonction de la largeur souhaitée de votre en-tête */
+    margin: 0 auto; /* Centrer l'en-tête dans la page */
+    padding: 10px;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center; /* Centrer le contenu horizontalement */
+    align-items: center;
+    flex-grow: 1;
+}
+
+.search-icon {
+    width: 24px; /* or the size you want */
+    height: auto;
+    margin-right: 10px;
+}
+.search-icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+
+.search-bar {
+    width: 100%; /* La barre de recherche prendra toute la largeur du conteneur */
+    max-width: 600px; /* Ajustez selon la largeur maximale souhaitée */
+    /* Ajouter d'autres styles comme le padding ou la hauteur si nécessaire */
+}
+
+.icons {
+    display: flex;
+    justify-content: flex-end; /* Alignement à droite pour les icônes */
+    align-items: center;
+}
+
+.icons img {
+    width: 50px; /* Adjust the size as needed */
+    height: auto;
+    margin-left: 10px; /* Espace entre les icônes */
+}
+
+#recommendations-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.cocktail {
+    width: 200px; /* ou la largeur que vous préférez */
+    margin: 10px;
+    text-align: center;
+}
+
+.cocktail-image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px; /* Arrondir les coins si vous le souhaitez */
+}
+
+.cocktail-name {
+    margin-top: 5px;
+}
+
+.favorite-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.favorite-button img {
+    width: 24px; /* Ajustez la taille selon vos besoins */
+    height: auto;
+}
+
+
+.cocktail-details-container {
+    display: flex;
+    margin-top: 20px;
+}
+
+.cocktail-image-container {
+    flex: 1;
+    padding: 10px;
+}
+
+.cocktail-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.cocktail-info-container {
+    flex: 2;
+    padding: 10px;
+}
+
+.ingredients-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.ingredients-list li {
+    margin-bottom: 5px;
+}
+
+.ingredient {
+    font-weight: bold;
+}
+
+.measure {
+    margin-left: 10px;
+}
+

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <header>
+        <form action="{{ url_for('search_cocktails') }}" method="get" class="search-form">
+            <div class="search-container">
+                <button type="submit" class="search-icon-button">
+                    <img src="{{ url_for('static', filename='icons/search.png') }}" alt="Search" class="search-icon"/>
+                </button>
+                <input type="text" name="query" placeholder="Rechercher des cocktails..." class="search-bar">
+            </div>
+        </form>
+        <div class="icons">
+            <a href="/profile">
+                <img src="{{ url_for('static', filename='icons/profile.png') }}" alt="Profile" />
+            </a>
+            <a href="/favorites">
+                <img src="{{ url_for('static', filename='icons/favorite.png') }}" alt="Favorites" />
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div id="recommendations-container">
+            <!-- Affichage des cocktails recommandés -->
+            <!-- ... -->
+            {% for cocktail in cocktails %}
+                <div class="cocktail">
+                    <!-- ... -->
+                    <img src="{{ cocktail['strDrinkThumb'] }}" alt="{{ cocktail['strDrink'] }}" class="cocktail-image">
+
+                    <h3 class="cocktail-name">{{ cocktail['strDrink'] }}</h3>
+                    <form action="{{ url_for('add_to_favorites') }}" method="post">
+                        <input type="hidden" name="cocktail_id" value="{{ cocktail['idDrink'] }}">
+                        <button type="submit" class="favorite-button">
+                            <img src="{{ url_for('static', filename='icons/favorite.png') }}" alt="Add to Favorites">
+                        </button>
+                    </form>
+                </div>
+            {% endfor %}
+            <!-- ... -->
+
+        </div>
+    </main>
+    
+    
+    
+
+    <script src="{{ url_for('static', filename='path_to_your_js_file.js') }}"></script>
+</body>
+</html>

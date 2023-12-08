@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for,session
 import psycopg2
 import os
 from dotenv import load_dotenv
@@ -103,10 +103,46 @@ def login():
         cursor.close()
         conn.close()
         if user:
+            session['user_id'] = user[0]
             return redirect(url_for('home'))
         else:
             return redirect(url_for('login'))
     return render_template('login.html')
+
+def give_recomendation(user_id):
+    pass
+
+
+
+@app.route('/swipe', methods=['GET'])
+def swipe():
+    user_id = session.get('user_id')  # Assurez-vous que l'utilisateur est connecté
+    if not user_id:
+        return redirect(url_for('login'))  # Redirigez vers la page de connexion si l'utilisateur n'est pas connecté
+
+    recipe = give_recomendation(user_id)  # Obtenez une recommandation de cocktail
+    return render_template('swipe.html', recipe=recipe)
+
+@app.route('/like', methods=['POST'])
+def like():
+    user_id = session.get('user_id')
+    recipe_id = request.form.get('recipe_id')
+    if user_id and recipe_id:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO likes (user_id, recipe_id) VALUES (%s, %s)", (user_id, recipe_id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+    return redirect(url_for('swipe'))
+
+@app.route('/pass', methods=['POST'])
+def pass_recipe():
+    return redirect(url_for('swipe'))
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

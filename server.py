@@ -37,7 +37,19 @@ def signup():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        pass
+        userDetails = request.form
+        username = userDetails['username']
+        password = userDetails['password']
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
+        user = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if user:
+            return redirect(url_for('home'))
+        else:
+            return redirect(url_for('login'))
     return render_template('login.html')
 
 if __name__ == '__main__':

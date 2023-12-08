@@ -40,18 +40,17 @@ def add_to_favorites():
 def search_cocktails():
     search_query = request.args.get('query')
     if search_query:
-        # Vous pouvez implémenter une logique pour trouver le cocktail par son nom.
-        # Supposons que vous avez une fonction get_cocktail_details qui renvoie les détails d'un cocktail.
+
         cocktail_details = get_cocktail_details(search_query)
-        cocktail_details = cocktail_details.replace({np.nan: None})
+        for key, value in cocktail_details.items():
+            if isinstance(value, float) and np.isnan(value):  
+                cocktail_details[key] = None
 
         if cocktail_details:
             return render_template('cocktail_details.html', details=cocktail_details)
         else:
-            # Gestion du cas où le cocktail n'est pas trouvé
             return render_template('cocktail_not_found.html', query=search_query)
     else:
-        # Gestion du cas où aucune requête de recherche n'est fournie
         return redirect(url_for('home'))
 
 

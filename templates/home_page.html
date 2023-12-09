@@ -38,9 +38,11 @@
                     <h3 class="cocktail-name">{{ cocktail['strDrink'] }}</h3>
                     <form action="{{ url_for('add_to_favorites') }}" method="post">
                         <input type="hidden" name="cocktail_id" value="{{ cocktail['idDrink'] }}">
-                        <button type="submit" class="favorite-button">
-                            <img src="{{ url_for('static', filename='icons/favorite.png') }}" alt="Add to Favorites">
+                        <button type="button" class="favorite-button" onclick="addToFavorites(event, '{{ cocktail['idDrink'] }}')">
+                            <img src="{{ url_for('static', filename='icons/favorite.png') }}" alt="Add to Favorites" class="favorite-icon-img" id="favorite-icon-img-{{ cocktail['idDrink'] }}">
                         </button>
+                        
+                        
                     </form>
                 </div>
             {% endfor %}
@@ -52,6 +54,7 @@
     
     
 
-    <script src="{{ url_for('static', filename='path_to_your_js_file.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
 </body>
 </html>

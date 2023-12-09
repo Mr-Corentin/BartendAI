@@ -2,11 +2,13 @@ from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
 import os
 from dotenv import load_dotenv
-
+from flask import jsonify
 app = Flask(__name__)
 import random
 import pandas as pd
 import numpy as np
+load_dotenv()
+
 # Importez pandas ou toute autre bibliothèque nécessaire pour charger vos données
 
 def get_cocktail_details(query):
@@ -30,13 +32,7 @@ def home():
     # Rendre le template en passant la liste de cocktails
     return render_template('home_page.html', cocktails=cocktails_list)
 
-@app.route('/add_to_favorites', methods=['POST'])
-def add_to_favorites():
-    cocktail_id = request.form.get('cocktail_id')
-    # Ajoutez ici la logique pour enregistrer le cocktail en tant que favori dans la base de données
-    print(f"Cocktail {cocktail_id} ajouté aux favoris")
-    # Redirigez l'utilisateur où vous le souhaitez après l'ajout : par exemple, la page d'accueil
-    return redirect(url_for('home'))
+
 
 
 @app.route('/search_cocktails', methods=['GET'])
@@ -56,11 +52,12 @@ def search_cocktails():
     else:
         return redirect(url_for('home'))
 
+@app.route('/add_to_favorites', methods=['POST'])
+def add_to_favorites():
+    data = request.get_json()
+    cocktail_id = data['cocktail_id']
+    return jsonify({'success': True})
 
-
-load_dotenv()
-
-app = Flask(__name__)
 
 db_config = {
     'host': os.getenv('POSTGRES_HOST'),
@@ -69,9 +66,13 @@ db_config = {
     'password': os.getenv('POSTGRES_PASSWORD')
 }
 
+
 def get_db_connection():
+    connection_string = f"postgresql://{db_config['user']}:{db_config['password']}@{db_config['host']}/{db_config['database']}"
+    print(connection_string) 
     conn = psycopg2.connect(**db_config)
     return conn
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():

@@ -76,8 +76,16 @@ header {
 }
 
 .favorite-button img {
-    width: 24px; /* Ajustez la taille selon vos besoins */
+    width: 24px; 
     height: auto;
+}
+
+.favorite-icon-img {
+    width: 24px; 
+    height: auto;
+}
+.favorite-icon-img-liked {
+    fill: pink;
 }
 
 
@@ -119,3 +127,19 @@ header {
     margin-left: 10px;
 }
 
+.favorite-icon img {
+    width: 24px; /* ou toute autre taille appropriée */
+    height: auto; /* cela préservera le ratio d'aspect de l'image */
+}
+
+.favorite-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.favorite-button img {
+    width: 24px; /* Ajustez la taille selon vos besoins */
+    height: auto;
+}

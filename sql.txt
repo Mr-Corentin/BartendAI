@@ -1,14 +1,15 @@
 CREATE DATABASE BartendAI;
 USE BartendAI;
 CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL
 );
 
-CREATE USER 'projet_BartendAI'@'localhost' IDENTIFIED BY 'BartendAI';
-GRANT ALL PRIVILEGES ON bartendai.users TO 'projet_bartendai'@'localhost';
-GRANT SELECT, INSERT, UPDATE, DELETE ON BartendAI.* TO 'projet_BartendAI'@'localhost';
+CREATE ROLE projet_bartendai WITH LOGIN PASSWORD 'BartendAI';
+GRANT ALL PRIVILEGES ON DATABASE bartendai TO projet_bartendai;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO projet_bartendai;
+
 insert into users(username,email,password) values('r','rom2@gmail.com','12364');
 select * from users

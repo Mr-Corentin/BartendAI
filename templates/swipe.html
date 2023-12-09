@@ -3,10 +3,81 @@
 <head>
     <title>Swipe for Cocktails</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .cocktail {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        .cocktail-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .cocktail-name {
+            color: #333;
+            margin-top: 0;
+        }
+
+        .cocktail-ingredients {
+            color: #666;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        form {
+            display: inline-block;
+        }
         .cocktail-image {
             max-width: 300px;
             height: auto;
         }
+
+        .like-button, .pass-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            transition: transform 0.3s;
+        }
+
+        .like-button:hover, .pass-button:hover {
+            transform: scale(1.1);
+        }
+
+        .like-button {
+            color: red;
+        }
+
+        .pass-button {
+            color: blue;
+        }
+
     </style>
 </head>
 <body>
@@ -20,16 +91,14 @@
         <!-- Affichage des ingrédients du cocktail -->
         <p class="cocktail-ingredients"><strong>Ingredients:</strong> {{ recipe['ingredients'] }}</p>
 
-        <!-- Formulaire pour "liker" le cocktail -->
         <form method="post" action="{{ url_for('like') }}">
             <input type="hidden" name="recipe_id" value="{{ recipe['idDrink'] }}">
-            <button type="submit">Like</button>
+            <button type="submit" class="like-button">❤️</button>
         </form>
 
-        <!-- Formulaire pour "passer" le cocktail -->
         <form method="post" action="{{ url_for('pass_recipe') }}">
             <input type="hidden" name="recipe_id" value="{{ recipe['idDrink'] }}">
-            <button type="submit">Pass</button>
+            <button type="submit" class="pass-button">❌</button>
         </form>
     </div>
 </body>

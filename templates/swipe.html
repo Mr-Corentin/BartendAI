@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Swipe</title>
+    <title>Swipe for Cocktails</title>
 </head>
 <body>
-    <h1>{{ recipe.name }}</h1>
-    <p>{{ recipe.description }}</p>
-    <!-- Ajoutez plus de détails sur la recette ici -->
+    <h1>{{ recipe['strDrink'] }}</h1>
+    <p>Ingredients: {{ recipe['ingredients'] }}</p>
+    <p>Category: {{ recipe['strCategory'] }}</p>
+    <p>Alcoholic: {% if recipe['isAlcoholic'] == 1 %}Yes{% else %}No{% endif %}</p>
 
     <form method="post" action="{{ url_for('like') }}">
-        <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+        <input type="hidden" name="recipe_id" value="{{ recipe['id'] }}">
         <button type="submit">Like</button>
     </form>
 

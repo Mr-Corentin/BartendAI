@@ -79,8 +79,30 @@
         }
 
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
 </head>
 <body>
+    <header>
+        
+        <form action="{{ url_for('search_cocktails') }}" method="get" class="search-form">
+            <div class="search-container">
+                <button type="submit" class="search-icon-button">
+                    <img src="{{ url_for('static', filename='icons/search.png') }}" alt="Search" class="search-icon"/>
+                </button>
+                <input type="text" name="query" placeholder="Rechercher des cocktails..." class="search-bar">
+            </div>
+        </form>
+        <div class="icons">
+            <a href="/profile">
+                <img src="{{ url_for('static', filename='icons/profile.png') }}" alt="Profile" />
+            </a>
+            <a href="/favorites">
+                <img src="{{ url_for('static', filename='icons/favorite.png') }}" alt="Favorites" />
+            </a>
+        </div>
+        
+    </header>
     <div class="cocktail">
         <!-- Affichage du nom du cocktail -->
         <h2 class="cocktail-name">{{ recipe['name'] }}</h2>

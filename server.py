@@ -2,17 +2,21 @@ from flask import Flask, render_template, request, redirect, url_for,session
 import psycopg2
 import os
 from dotenv import load_dotenv
+import random
+import pandas as pd
+import numpy as np
 
+load_dotenv()
+print("Host:", os.getenv('POSTGRES_HOST'))
+print("DB:", os.getenv('POSTGRES_DB'))
+print("User:", os.getenv('POSTGRES_USER'))
+print("Password:", os.getenv('POSTGRES_PASSWORD'))
 
 secret_key = os.getenv('SECRET_KEY', 'ACBCEUFIZ13azdeuicz13452_ufjd')
 
 
 app = Flask(__name__)
 app.secret_key = secret_key
-import random
-import pandas as pd
-import numpy as np
-# Importez pandas ou toute autre bibliothèque nécessaire pour charger vos données
 
 
 data=pd.read_csv("all_drinks.csv")
@@ -62,7 +66,7 @@ def give_recomendation(user_id):
         like_name = df.loc[df["idDrink"] == idDrink[0][0]]['strDrink']
     except:
         return data.sample(1)
-    
+    print("name",like_name)
     reco_cocktail = recommend_cocktail(like_name)
 
     if reco_cocktail is None:
@@ -91,24 +95,21 @@ def get_cocktail_details(query):
 
 @app.route('/')
 def home():
-    # Chargez vos données de cocktails, ici un exemple avec pandas
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
     df = pd.read_csv('all_drinks.csv')
     
-    # Sélectionnez un nombre aléatoire de cocktails, disons 10 pour cet exemple
     random_cocktails = df.sample(10)
     
-    # Convertissez le DataFrame en une liste de dictionnaires pour le passer au template
     cocktails_list = random_cocktails.to_dict('records')
     
-    # Rendre le template en passant la liste de cocktails
     return render_template('home_page.html', cocktails=cocktails_list)
 
 @app.route('/add_to_favorites', methods=['POST'])
 def add_to_favorites():
     cocktail_id = request.form.get('cocktail_id')
-    # Ajoutez ici la logique pour enregistrer le cocktail en tant que favori dans la base de données
     print(f"Cocktail {cocktail_id} ajouté aux favoris")
-    # Redirigez l'utilisateur où vous le souhaitez après l'ajout : par exemple, la page d'accueil
     return redirect(url_for('home'))
 
 
@@ -116,18 +117,17 @@ def add_to_favorites():
 def search_cocktails():
     search_query = request.args.get('query')
     if search_query:
-        # Vous pouvez implémenter une logique pour trouver le cocktail par son nom.
-        # Supposons que vous avez une fonction get_cocktail_details qui renvoie les détails d'un cocktail.
+
         cocktail_details = get_cocktail_details(search_query)
-        cocktail_details = cocktail_details.replace({np.nan: None})
+        #cocktail_details = cocktail_details.replace({np.nan: None})
+        cocktail_details = {k: (v if not pd.isna(v) else None) for k, v in cocktail_details.items()}
+
 
         if cocktail_details:
             return render_template('cocktail_details.html', details=cocktail_details)
         else:
-            # Gestion du cas où le cocktail n'est pas trouvé
             return render_template('cocktail_not_found.html', query=search_query)
     else:
-        # Gestion du cas où aucune requête de recherche n'est fournie
         return redirect(url_for('home'))
 
 
@@ -219,7 +219,31 @@ def pass_recipe():
     return redirect(url_for('swipe'))
 
 
+@app.route('/favorites')
+def favorites():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT idDrink FROM likes WHERE user_id = %s", (user_id,))
+    favorite_ids = cursor.fetchall()
+    cursor.close()
+    conn.close()
 
+    favorites_details = []
+    for idDrink in favorite_ids:
+        cocktail_details = get_cocktail_details_by_id(idDrink[0])
+        if cocktail_details:
+            favorites_details.append(cocktail_details)
+    
+    return render_template('favorites.html', favorites=favorites_details)
+
+def get_cocktail_details_by_id(cocktail_id):
+    df = pd.read_csv('all_drinks.csv')  # Assurez-vous de ne pas charger le CSV à chaque appel
+    cocktail_details = df.loc[df['idDrink'] == cocktail_id].to_dict('records')
+    return cocktail_details[0] if cocktail_details else None
 
 
 if __name__ == '__main__':

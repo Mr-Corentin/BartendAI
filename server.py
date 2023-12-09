@@ -2,16 +2,18 @@ from flask import Flask, render_template, request, redirect, url_for,session
 import psycopg2
 import os
 from dotenv import load_dotenv
+import random
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-
+load_dotenv()
 secret_key = os.getenv('SECRET_KEY', 'ACBCEUFIZ13azdeuicz13452_ufjd')
 
 
 app = Flask(__name__)
 app.secret_key = secret_key
-import random
-import pandas as pd
-import numpy as np
 # Importez pandas ou toute autre bibliothèque nécessaire pour charger vos données
 
 
@@ -33,12 +35,10 @@ df = data.drop_duplicates(subset='strDrink')
 df['isAlcoholic'] = df['strAlcoholic'].apply(lambda x: 1 if x == 'alcoholic' else 0)
 df = df[['idDrink','strDrink', 'ingredients', 'strCategory', 'isAlcoholic']]
 
-from sklearn.feature_extraction.text import TfidfVectorizer
 tfidf = TfidfVectorizer()
 
 tfidf_matrix = tfidf.fit_transform(df['ingredients'])
 
-from sklearn.metrics.pairwise import cosine_similarity
 
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
@@ -217,9 +217,6 @@ def like():
 @app.route('/pass', methods=['POST'])
 def pass_recipe():
     return redirect(url_for('swipe'))
-
-
-
 
 
 if __name__ == '__main__':

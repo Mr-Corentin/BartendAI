@@ -16,35 +16,46 @@ app = Flask(__name__)
 app.secret_key = secret_key
 # Importez pandas ou toute autre bibliothèque nécessaire pour charger vos données
 
+def csv_data():
+    data=pd.read_csv("all_drinks.csv")
+    ingredient_cols = [col for col in data.columns if 'strIngredient' in col]
 
-data=pd.read_csv("all_drinks.csv")
-ingredient_cols = [col for col in data.columns if 'strIngredient' in col]
+    data["recipe_id"] = data.index
+    data['ingredients'] = data[ingredient_cols].apply(lambda x: ', '.join(x.dropna().astype(str)), axis=1)
 
-data["recipe_id"] = data.index
-data['ingredients'] = data[ingredient_cols].apply(lambda x: ', '.join(x.dropna().astype(str)), axis=1)
+    data['ingredients'] = data['ingredients'].str.replace(r'\s+', ' ', regex=True).str.strip()
 
-data['ingredients'] = data['ingredients'].str.replace(r'\s+', ' ', regex=True).str.strip()
+    data['strDrink'] = data['strDrink'].str.lower()
+    data['ingredients'] = data['ingredients'].str.lower()
 
-data['strDrink'] = data['strDrink'].str.lower()
-data['ingredients'] = data['ingredients'].str.lower()
-
-data['strCategory'] = data['strCategory'].str.lower()
-data['strAlcoholic'] = data['strAlcoholic'].str.lower()
-df = data.drop_duplicates(subset='strDrink')
-
-df['isAlcoholic'] = df['strAlcoholic'].apply(lambda x: 1 if x == 'alcoholic' else 0)
-df = df[['idDrink','strDrink', 'ingredients', 'strCategory', 'isAlcoholic']]
-
-tfidf = TfidfVectorizer()
-
-tfidf_matrix = tfidf.fit_transform(df['ingredients'])
+    data['strCategory'] = data['strCategory'].str.lower()
+    data['strAlcoholic'] = data['strAlcoholic'].str.lower()
+    return data
 
 
-cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+def clean_dataset(data):
+    
+    df = data.drop_duplicates(subset='strDrink')
 
-indices = pd.Series(df.index, index=df['strDrink']).drop_duplicates()
+    df['isAlcoholic'] = df['strAlcoholic'].apply(lambda x: 1 if x == 'alcoholic' else 0)
+    df = df[['idDrink','strDrink', 'ingredients', 'strCategory', 'isAlcoholic']]
+    return df
+
+def tf_cosine_indices(df):
+    tfidf = TfidfVectorizer()
+
+    tfidf_matrix = tfidf.fit_transform(df['ingredients'])
 
 
+    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+
+    indices = pd.Series(df.index, index=df['strDrink']).drop_duplicates()
+    return cosine_sim, indices
+
+
+data = csv_data()
+df = clean_dataset(data)
+cosine_sim, indices = tf_cosine_indices(df)
 
 def give_recomendation(user_id):
     # charger les likes de l'utilisateur

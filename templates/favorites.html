@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vos Favoris</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+<body>
+    <header>
+        
+        <form action="{{ url_for('search_cocktails') }}" method="get" class="search-form">
+            <div class="search-container">
+                <button type="submit" class="search-icon-button">
+                    <img src="{{ url_for('static', filename='icons/search.png') }}" alt="Search" class="search-icon"/>
+                </button>
+                <input type="text" name="query" placeholder="Rechercher des cocktails..." class="search-bar">
+            </div>
+        </form>
+        <div class="icons">
+            <a href="/profile">
+                <img src="{{ url_for('static', filename='icons/profile.png') }}" alt="Profile" />
+            </a>
+            <a href="/favorites">
+                <img src="{{ url_for('static', filename='icons/favorite.png') }}" alt="Favorites" />
+            </a>
+        </div>
+        
+    </header>
+    <h1>Vos Cocktails Favoris</h1>
+    <div id="favorites-container">
+        {% for cocktail in favorites %}
+            <div class="favorite-item">
+                <img src="{{ cocktail['strDrinkThumb'] }}" alt="{{ cocktail['strDrink'] }}" class="favorite-image">
+                <!-- Utilisez la route de recherche existante pour afficher les détails du cocktail -->
+                <h2><a href="{{ url_for('search_cocktails', query=cocktail['strDrink']) }}">{{ cocktail['strDrink'] }}</a></h2>
+                <!-- Ajoutez plus de détails sur le cocktail ici -->
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

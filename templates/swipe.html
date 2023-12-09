@@ -2,20 +2,35 @@
 <html>
 <head>
     <title>Swipe for Cocktails</title>
+    <style>
+        .cocktail-image {
+            max-width: 300px;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ recipe['strDrink'] }}</h1>
-    <p>Ingredients: {{ recipe['ingredients'] }}</p>
-    <p>Category: {{ recipe['strCategory'] }}</p>
-    <p>Alcoholic: {% if recipe['isAlcoholic'] == 1 %}Yes{% else %}No{% endif %}</p>
+    <div class="cocktail">
+        <!-- Affichage du nom du cocktail -->
+        <h2 class="cocktail-name">{{ recipe['name'] }}</h2>
 
-    <form method="post" action="{{ url_for('like') }}">
-        <input type="hidden" name="recipe_id" value="{{ recipe['id'] }}">
-        <button type="submit">Like</button>
-    </form>
+        <!-- Affichage de l'image du cocktail -->
+        <img src="{{ recipe['image'] }}" alt="Image of {{ recipe['name'] }}" class="cocktail-image">
 
-    <form method="post" action="{{ url_for('pass_recipe') }}">
-        <button type="submit">Pass</button>
-    </form>
+        <!-- Affichage des ingrédients du cocktail -->
+        <p class="cocktail-ingredients"><strong>Ingredients:</strong> {{ recipe['ingredients'] }}</p>
+
+        <!-- Formulaire pour "liker" le cocktail -->
+        <form method="post" action="{{ url_for('like') }}">
+            <input type="hidden" name="recipe_id" value="{{ recipe['idDrink'] }}">
+            <button type="submit">Like</button>
+        </form>
+
+        <!-- Formulaire pour "passer" le cocktail -->
+        <form method="post" action="{{ url_for('pass_recipe') }}">
+            <input type="hidden" name="recipe_id" value="{{ recipe['idDrink'] }}">
+            <button type="submit">Pass</button>
+        </form>
+    </div>
 </body>
 </html>

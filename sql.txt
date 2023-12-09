@@ -12,3 +12,17 @@ GRANT ALL PRIVILEGES ON bartendai.users TO 'projet_bartendai'@'localhost';
 GRANT SELECT, INSERT, UPDATE, DELETE ON BartendAI.* TO 'projet_BartendAI'@'localhost';
 insert into users(username,email,password) values('r','rom2@gmail.com','12364');
 select * from users
+
+CREATE TABLE likes (
+    id SERIAL PRIMARY KEY,
+    user_id INT,
+    idDrink INT,
+	time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+drop table likes;
+insert into likes(user_id,idDrink,time) values (1,0,'2023-12-09 01:29:00'::timestamp)
+select * from likes
+
+GRANT ALL PRIVILEGES ON TABLE likes TO bartendai_user;
+GRANT USAGE, SELECT ON SEQUENCE likes_id_seq TO bartendai_user;

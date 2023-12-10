@@ -35,9 +35,7 @@
         {% for cocktail in favorites %}
             <div class="favorite-item">
                 <img src="{{ cocktail['strDrinkThumb'] }}" alt="{{ cocktail['strDrink'] }}" class="favorite-image">
-                <!-- Utilisez la route de recherche existante pour afficher les détails du cocktail -->
                 <h2><a href="{{ url_for('search_cocktails', query=cocktail['strDrink']) }}">{{ cocktail['strDrink'] }}</a></h2>
-                <!-- Ajoutez plus de détails sur le cocktail ici -->
             </div>
         {% endfor %}
     </div>

@@ -1,0 +1,7 @@
+Flask
+psycopg2
+python-dotenv
+pandas
+numpy
+scikit-learn
+pytest

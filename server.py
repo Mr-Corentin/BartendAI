@@ -250,6 +250,25 @@ def get_cocktail_details_by_id(cocktail_id):
     cocktail_details = df.loc[df['idDrink'] == cocktail_id].to_dict('records')
     return cocktail_details[0] if cocktail_details else None
 
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('login'))
+
+@app.route('/profile')
+def profile():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT username, email FROM users WHERE id = %s", (user_id,))
+    user_info = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if user_info:
+        return render_template('profile.html', username=user_info[0], email=user_info[1])
 
 if __name__ == '__main__':
     app.run(debug=True)

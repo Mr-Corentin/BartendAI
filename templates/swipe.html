@@ -100,17 +100,17 @@
             <a href="/favorites">
                 <img src="{{ url_for('static', filename='icons/favorite.png') }}" alt="Favorites" />
             </a>
+            <a href="/swipe">
+                <img src=" {{ url_for('static', filename='icons/swipe-right-icon.svg') }}" alt="Swipe" />
+            </a>
         </div>
         
     </header>
     <div class="cocktail">
-        <!-- Affichage du nom du cocktail -->
         <h2 class="cocktail-name">{{ recipe['name'] }}</h2>
 
-        <!-- Affichage de l'image du cocktail -->
         <img src="{{ recipe['image'] }}" alt="Image of {{ recipe['name'] }}" class="cocktail-image">
 
-        <!-- Affichage des ingrédients du cocktail -->
         <p class="cocktail-ingredients"><strong>Ingredients:</strong> {{ recipe['ingredients'] }}</p>
 
         <form method="post" action="{{ url_for('like') }}">

@@ -2,11 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for,session
 import psycopg2
 import os
 from dotenv import load_dotenv
-import random
-import pandas as pd
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 
 load_dotenv()
 secret_key = os.getenv('SECRET_KEY', 'ACBCEUFIZ13azdeuicz13452_ufjd')
@@ -14,7 +9,6 @@ secret_key = os.getenv('SECRET_KEY', 'ACBCEUFIZ13azdeuicz13452_ufjd')
 
 app = Flask(__name__)
 app.secret_key = secret_key
-# Importez pandas ou toute autre bibliothèque nécessaire pour charger vos données
 
 def csv_data():
     data=pd.read_csv("all_drinks.csv")
@@ -73,7 +67,7 @@ def give_recomendation(user_id):
         like_name = df.loc[df["idDrink"] == idDrink[0][0]]['strDrink']
     except:
         return data.sample(1)
-    
+    print("name",like_name)
     reco_cocktail = recommend_cocktail(like_name)
 
     if reco_cocktail is None:
@@ -102,24 +96,21 @@ def get_cocktail_details(query):
 
 @app.route('/')
 def home():
-    # Chargez vos données de cocktails, ici un exemple avec pandas
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
     df = pd.read_csv('all_drinks.csv')
     
-    # Sélectionnez un nombre aléatoire de cocktails, disons 10 pour cet exemple
     random_cocktails = df.sample(10)
     
-    # Convertissez le DataFrame en une liste de dictionnaires pour le passer au template
     cocktails_list = random_cocktails.to_dict('records')
     
-    # Rendre le template en passant la liste de cocktails
     return render_template('home_page.html', cocktails=cocktails_list)
 
 @app.route('/add_to_favorites', methods=['POST'])
 def add_to_favorites():
     cocktail_id = request.form.get('cocktail_id')
-    # Ajoutez ici la logique pour enregistrer le cocktail en tant que favori dans la base de données
     print(f"Cocktail {cocktail_id} ajouté aux favoris")
-    # Redirigez l'utilisateur où vous le souhaitez après l'ajout : par exemple, la page d'accueil
     return redirect(url_for('home'))
 
 
@@ -227,6 +218,33 @@ def like():
 @app.route('/pass', methods=['POST'])
 def pass_recipe():
     return redirect(url_for('swipe'))
+
+
+@app.route('/favorites')
+def favorites():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT idDrink FROM likes WHERE user_id = %s", (user_id,))
+    favorite_ids = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    favorites_details = []
+    for idDrink in favorite_ids:
+        cocktail_details = get_cocktail_details_by_id(idDrink[0])
+        if cocktail_details:
+            favorites_details.append(cocktail_details)
+    
+    return render_template('favorites.html', favorites=favorites_details)
+
+def get_cocktail_details_by_id(cocktail_id):
+    df = pd.read_csv('all_drinks.csv')  # Assurez-vous de ne pas charger le CSV à chaque appel
+    cocktail_details = df.loc[df['idDrink'] == cocktail_id].to_dict('records')
+    return cocktail_details[0] if cocktail_details else None
 
 
 if __name__ == '__main__':

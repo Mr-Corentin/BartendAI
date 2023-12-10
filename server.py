@@ -243,3 +243,4 @@ def get_cocktail_details_by_id(cocktail_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+

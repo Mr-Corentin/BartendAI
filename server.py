@@ -2,6 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for,session
 import psycopg2
 import os
 from dotenv import load_dotenv
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 load_dotenv()
 secret_key = os.getenv('SECRET_KEY', 'ACBCEUFIZ13azdeuicz13452_ufjd')

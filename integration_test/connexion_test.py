@@ -11,24 +11,21 @@ import pytest
 def client():
     with flask_app.test_client() as client:
         yield client
-    delete_test_user("newuser10")
     
 
 
 def test_signup(client):
-    delete_test_user("newuser10")
-
     response = client.post('/signup', data={
-        'username': 'newuser10',
+        'username': 'newuser12',
         'email': 'newuser@example.com',
-        'password': 'newpass10'
+        'password': 'newpass12'
     })
     assert "/login" in response.headers["Location"]
 
 def test_login(client):
     response = client.post('/login', data={
-        'username': 'newuser10',
-        'password': 'newpass10'
+        'username': 'newuser12',
+        'password': 'newpass12'
     })
     assert "/home" in response.headers["Location"]
 
@@ -38,5 +35,7 @@ def test_login_failure(client):
         'password': 'wrongpassword'
     })
     assert "/login" in response.request.url
+    delete_test_user("newuser12")
+
     
 

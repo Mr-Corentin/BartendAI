@@ -90,10 +90,13 @@ def give_recomendation(user_id):
 
 def recommend_cocktail(cocktail_name):
     try:
+        print("cocktail_name",cocktail_name)
         idx = indices[cocktail_name]
+        print("idx",idx)
         sim_scores = list(enumerate(cosine_sim[idx]))
+
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1] 
+        sim_scores = sim_scores[0] 
     except:
         return None
 
@@ -107,7 +110,7 @@ def get_cocktail_details(query):
     return cocktail_details
 
 
-@app.route('/')
+@app.route('/home')
 def home():
     user_id = session.get('user_id')
     if not user_id:
@@ -258,6 +261,47 @@ def get_cocktail_details_by_id(cocktail_id):
     df = pd.read_csv('all_drinks.csv')  # Assurez-vous de ne pas charger le CSV à chaque appel
     cocktail_details = df.loc[df['idDrink'] == cocktail_id].to_dict('records')
     return cocktail_details[0] if cocktail_details else None
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('login'))
+
+@app.route('/profile')
+def profile():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT username, email FROM users WHERE id = %s", (user_id,))
+    user_info = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if user_info:
+        return render_template('profile.html', username=user_info[0], email=user_info[1])
+    
+
+def delete_test_user(username):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT EXISTS(SELECT 1 FROM users WHERE username=%s)", (username,))
+    exists = cursor.fetchone()[0]
+    if exists:
+        cursor.execute("DELETE FROM users WHERE username = %s", (username,))
+        conn.commit()
+    cursor.close()
+    conn.close()
+
+def check_favorite_exists(user_id, cocktail_id):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT EXISTS(SELECT 1 FROM likes WHERE user_id = %s AND idDrink = %s)", (user_id, cocktail_id))
+            return cursor.fetchone()[0]
+    finally:
+        conn.close()
 
 
 if __name__ == '__main__':

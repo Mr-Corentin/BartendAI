@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Vos Favoris</title>
+    <title>Profil</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
 </head>
@@ -30,14 +30,15 @@
         </div>
         
     </header>
-    <h1>Vos Cocktails Favoris</h1>
-    <div id="favorites-container">
-        {% for cocktail in favorites %}
-            <div class="favorite-item">
-                <img src="{{ cocktail['strDrinkThumb'] }}" alt="{{ cocktail['strDrink'] }}" class="favorite-image">
-                <h2><a href="{{ url_for('search_cocktails', query=cocktail['strDrink']) }}">{{ cocktail['strDrink'] }}</a></h2>
-            </div>
-        {% endfor %}
+    <h1>Profil</h1>
+    
+    <div>
+        <p>Nom d'utilisateur: {{ username }}</p>
+        <p>Email: {{ email }}</p>
     </div>
+
+    <form action="{{ url_for('logout') }}" method="post">
+        <button type="submit" id="logout-button">Se déconnecter</button>
+    </form>
 </body>
 </html>

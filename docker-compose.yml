@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      POSTGRES_USER: bartendai_user
+      POSTGRES_PASSWORD: zf65zvzervezczexsqczvgnebthazsdcdfghnjuytrgefcdbg
+      POSTGRES_DB: BartendAI
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: bartendai_user
+      POSTGRES_PASSWORD: zf65zvzervezczexsqczvgnebthazsdcdfghnjuytrgefcdbg
+      POSTGRES_DB: BartendAI
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

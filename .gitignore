@@ -1,3 +1,5 @@
 __pycache__
 bartendai
 bartendai2
+.pytest_cache
+data

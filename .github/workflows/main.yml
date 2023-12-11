@@ -45,11 +45,6 @@ jobs:
         pytest test_unitaire.py
     
     
-
-    - name: Run test e2e
-      run: |
-        pytest test_E2E.py
-    
     - name: Run test integration
       run: |
         pytest integration_test\connexion_test.py

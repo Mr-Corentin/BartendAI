@@ -17,10 +17,10 @@ def test_recommend_cocktail():
     cosine_sim, indices = tf_cosine_indices(df)
     coktail_name = df.sample(1)['strDrink']
     print(coktail_name)
-    cocktail_reco = recommend_cocktail(coktail_name)
+    cocktail_reco = recommend_cocktail(coktail_name,[])
     assert cocktail_reco is not None
 
-    cocktail_reco2 = recommend_cocktail(coktail_name)
+    cocktail_reco2 = recommend_cocktail(coktail_name,[])
     assert cocktail_reco2 is not None
 
     assert cocktail_reco['strDrink'] == cocktail_reco2['strDrink']

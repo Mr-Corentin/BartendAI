@@ -40,6 +40,16 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Run pytest
+    - name: Run test unitaire
       run: |
-        pytest test.py
+        pytest test_unitaire.py
+    
+    - name: Run test integration
+      run: |
+        pytest integration_test\connexion_test.py
+        pytest integration_test\favorites_pages_test.py
+        pytest integration_test\likes_test.py
+
+    - name: Run test e2e
+      run: |
+        pytest test_E2E.py

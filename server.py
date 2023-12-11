@@ -101,7 +101,7 @@ def get_cocktail_details(query):
     return cocktail_details
 
 
-@app.route('/')
+@app.route('/home')
 def home():
     user_id = session.get('user_id')
     if not user_id:
@@ -252,6 +252,38 @@ def get_cocktail_details_by_id(cocktail_id):
     df = pd.read_csv('all_drinks.csv')  # Assurez-vous de ne pas charger le CSV à chaque appel
     cocktail_details = df.loc[df['idDrink'] == cocktail_id].to_dict('records')
     return cocktail_details[0] if cocktail_details else None
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('login'))
+
+@app.route('/profile')
+def profile():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT username, email FROM users WHERE id = %s", (user_id,))
+    user_info = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if user_info:
+        return render_template('profile.html', username=user_info[0], email=user_info[1])
+    
+
+def delete_test_user(username):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT EXISTS(SELECT 1 FROM users WHERE username=%s)", (username,))
+    exists = cursor.fetchone()[0]
+    if exists:
+        cursor.execute("DELETE FROM users WHERE username = %s", (username,))
+        conn.commit()
+    cursor.close()
+    conn.close()
 
 
 if __name__ == '__main__':

@@ -81,10 +81,13 @@ def give_recomendation(user_id):
 
 def recommend_cocktail(cocktail_name):
     try:
+        print("cocktail_name",cocktail_name)
         idx = indices[cocktail_name]
+        print("idx",idx)
         sim_scores = list(enumerate(cosine_sim[idx]))
+
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1] 
+        sim_scores = sim_scores[0] 
     except:
         return None
 

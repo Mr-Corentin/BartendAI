@@ -5,5 +5,5 @@ pandas
 numpy
 scikit-learn
 pytest
-selenium
-webdriver_manager
+selinium
+webdrivers

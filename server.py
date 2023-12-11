@@ -282,6 +282,15 @@ def delete_test_user(username):
     cursor.close()
     conn.close()
 
+def check_favorite_exists(user_id, cocktail_id):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT EXISTS(SELECT 1 FROM likes WHERE user_id = %s AND idDrink = %s)", (user_id, cocktail_id))
+            return cursor.fetchone()[0]
+    finally:
+        conn.close()
+
 
 if __name__ == '__main__':
     app.run(debug=True)

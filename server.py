@@ -65,39 +65,54 @@ df = clean_dataset(data)
 cosine_sim, indices = tf_cosine_indices(df)
 
 def give_recomendation(user_id):
-    # charger les likes de l'utilisateur
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT idDrink FROM likes WHERE user_id = %s order by time DESC LIMIT 1", (user_id,))
-    idDrink = cursor.fetchall()
+
+    # Récupérer les cocktails favoris de l'utilisateur
+    cursor.execute("SELECT idDrink FROM likes WHERE user_id = %s", (user_id,))
+    favorite_drinks = [row[0] for row in cursor.fetchall()]
+
+    # Récupérer le dernier cocktail liké par l'utilisateur pour la recommandation
+    cursor.execute("SELECT idDrink FROM likes WHERE user_id = %s ORDER BY time DESC LIMIT 1", (user_id,))
+    idDrink = cursor.fetchone()
+
     cursor.close()
     conn.close()
 
     if not idDrink:
         return data.sample(1)
-    
+
     try:
-        like_name = df.loc[df["idDrink"] == idDrink[0][0]]['strDrink']
-    except:
-        return data.sample(1)
-    print("name",like_name)
-    reco_cocktail = recommend_cocktail(like_name)
+        like_name = df.loc[df["idDrink"] == idDrink[0]]['strDrink'].values[0]
+        reco_cocktail = recommend_cocktail(like_name, favorite_drinks)
 
-    if reco_cocktail is None:
-        print("error recommendation")
-        return data.sample(1)
-    return data[data['strDrink'] == reco_cocktail['strDrink']]
+        if reco_cocktail is None or reco_cocktail['idDrink'] in favorite_drinks:
+            return data.sample(1)
 
-def recommend_cocktail(cocktail_name):
+        return data[data['strDrink'] == reco_cocktail['strDrink']]
+    except Exception as e:
+        print(f"Error in give_recommendation: {e}")
+        return data.sample(1)
+
+
+def recommend_cocktail(cocktail_name, exclude_ids):
     try:
         idx = indices[cocktail_name]
         sim_scores = list(enumerate(cosine_sim[idx]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1] 
-    except:
+
+        # Filtrer les cocktails déjà dans les favoris
+        sim_scores = [score for score in sim_scores if df.iloc[score[0]]['idDrink'] not in exclude_ids]
+
+        if not sim_scores:
+            return None
+
+        return df.iloc[sim_scores[0][0]]
+    except Exception as e:
+        print(f"Error in recommend_cocktail: {e}")
         return None
 
-    return df.iloc[sim_scores[0]]
+
 
 
 
@@ -107,7 +122,7 @@ def get_cocktail_details(query):
     return cocktail_details
 
 
-@app.route('/')
+@app.route('/home')
 def home():
     user_id = session.get('user_id')
     if not user_id:
@@ -230,6 +245,10 @@ def like():
 
 @app.route('/pass', methods=['POST'])
 def pass_recipe():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+
     return redirect(url_for('swipe'))
 
 
@@ -258,6 +277,47 @@ def get_cocktail_details_by_id(cocktail_id):
     df = pd.read_csv('all_drinks.csv')  # Assurez-vous de ne pas charger le CSV à chaque appel
     cocktail_details = df.loc[df['idDrink'] == cocktail_id].to_dict('records')
     return cocktail_details[0] if cocktail_details else None
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('login'))
+
+@app.route('/profile')
+def profile():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT username, email FROM users WHERE id = %s", (user_id,))
+    user_info = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if user_info:
+        return render_template('profile.html', username=user_info[0], email=user_info[1])
+    
+
+def delete_test_user(username):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT EXISTS(SELECT 1 FROM users WHERE username=%s)", (username,))
+    exists = cursor.fetchone()[0]
+    if exists:
+        cursor.execute("DELETE FROM users WHERE username = %s", (username,))
+        conn.commit()
+    cursor.close()
+    conn.close()
+
+def check_favorite_exists(user_id, cocktail_id):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT EXISTS(SELECT 1 FROM likes WHERE user_id = %s AND idDrink = %s)", (user_id, cocktail_id))
+            return cursor.fetchone()[0]
+    finally:
+        conn.close()
 
 
 if __name__ == '__main__':

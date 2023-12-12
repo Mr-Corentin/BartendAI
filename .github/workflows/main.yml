@@ -46,6 +46,6 @@ jobs:
     
     - name: Run test integration
       run: |
-        docker exec -it bartendai_web_1 pytest integration_test\connexion_test.py
-        docker exec -it bartendai_web_1 integration_test\favorites_pages_test.py
-        docker exec -it bartendai_web_1 integration_test\likes_test.py
+        docker exec bartendai_web_1 pytest integration_test/connexion_test.py
+        docker exec bartendai_web_1 pytest integration_test\favorites_pages_test.py
+        docker exec bartendai_web_1 pytest integration_test\likes_test.py

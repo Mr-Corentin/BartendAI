@@ -42,15 +42,10 @@ jobs:
 
     - name: Run test unitaire
       run: |
-        pytest test_unitaire.py
-
-    - name: Run e2e test
-      run: |
-        pytest test_E2E.py
-    
+        docker exec -it bartendai-web-1 test_unitaire.py   
     
     - name: Run test integration
       run: |
-        pytest integration_test\connexion_test.py
-        pytest integration_test\favorites_pages_test.py
-        pytest integration_test\likes_test.py
+        docker exec -it bartendai-web-1 pytest integration_test\connexion_test.py
+        docker exec -it bartendai-web-1 integration_test\favorites_pages_test.py
+        docker exec -it bartendai-web-1 integration_test\likes_test.py

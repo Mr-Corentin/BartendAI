@@ -6,16 +6,9 @@ import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import pandas as pd
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+from sqlalchemy import create_engine
 
 
-import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 load_dotenv()
 secret_key = os.getenv('SECRET_KEY', 'ACBCEUFIZ13azdeuicz13452_ufjd')
 
@@ -335,5 +328,23 @@ def check_favorite_exists(user_id, cocktail_id):
 def index():
     return redirect(url_for('login'))
 
+
+def init_table_coktail():
+    load_dotenv()
+    db_config = {
+        'host': os.getenv('POSTGRES_HOST'),
+        'database': os.getenv('POSTGRES_DB'),
+        'user': os.getenv('POSTGRES_USER'),
+        'password': os.getenv('POSTGRES_PASSWORD')
+    }
+    db_connection = f"postgresql://{db_config['user']}:{db_config['password']}@{db_config['host']}/{db_config['database']}"
+    engine = create_engine(db_connection)
+
+
+    df_co = pd.read_csv('all_drinks.csv')
+
+    # Insérer les données dans PostgreSQL
+    df_co.to_sql('cocktails', engine, if_exists='append', index=False)
 if __name__ == '__main__':
+    #init_table_coktail()
     app.run(host='0.0.0.0', port=5000, debug=True)

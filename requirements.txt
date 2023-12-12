@@ -6,3 +6,5 @@ numpy
 scikit-learn
 pytest
 sqlalchemy
+selenium
+webdriver_manager

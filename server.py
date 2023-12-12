@@ -248,8 +248,19 @@ def pass_recipe():
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('login'))
-
-    return redirect(url_for('swipe'))
+    idDrink = request.form.get('recipe_id')
+    recipe = data.sample(1)
+    while recipe['idDrink'].values[0] == idDrink:
+        recipe = data.sample(1)
+    recipe = {
+        'name': recipe['strDrink'].values[0],
+        'category': recipe['strCategory'].values[0],
+        'alcoholic': recipe['strAlcoholic'].values[0],
+        'ingredients': recipe['ingredients'].values[0],
+        'image': recipe['strDrinkThumb'].values[0],
+        'idDrink': recipe['idDrink'].values[0]
+    }
+    return render_template('swipe.html', recipe=recipe)
 
 
 @app.route('/favorites')
@@ -319,6 +330,10 @@ def check_favorite_exists(user_id, cocktail_id):
     finally:
         conn.close()
 
+
+@app.route('/')
+def index():
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

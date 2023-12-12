@@ -5,5 +5,3 @@ pandas
 numpy
 scikit-learn
 pytest
-selinium
-webdrivers

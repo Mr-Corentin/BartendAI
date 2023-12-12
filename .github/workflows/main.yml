@@ -42,7 +42,7 @@ jobs:
 
     - name: Run test unitaire
       run: |
-        docker exec -it bartendai_web_1 test_unitaire.py   
+        pytest test_unitaire.py   
     
     - name: Run test integration
       run: |

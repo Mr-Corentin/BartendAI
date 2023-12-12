@@ -25,4 +25,10 @@ Il faut ensuite aller à l'adresse suivante:
 
 http://localhost:5000
 
+## Tests
+
+Les tests unitaires sont dans le fichier test_unitaire.py, les tests d'intégration sont dans le dossier integration test et les tests end to end sont dans le fichier test_E2E.py.
+
+Les tests sont intégrés dans le git action
+
 

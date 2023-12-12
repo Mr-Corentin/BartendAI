@@ -6,16 +6,9 @@ import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import pandas as pd
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+from sqlalchemy import create_engine
 
 
-import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 load_dotenv()
 secret_key = os.getenv('SECRET_KEY', 'ACBCEUFIZ13azdeuicz13452_ufjd')
 
@@ -248,8 +241,19 @@ def pass_recipe():
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('login'))
-
-    return redirect(url_for('swipe'))
+    idDrink = request.form.get('recipe_id')
+    recipe = data.sample(1)
+    while recipe['idDrink'].values[0] == idDrink:
+        recipe = data.sample(1)
+    recipe = {
+        'name': recipe['strDrink'].values[0],
+        'category': recipe['strCategory'].values[0],
+        'alcoholic': recipe['strAlcoholic'].values[0],
+        'ingredients': recipe['ingredients'].values[0],
+        'image': recipe['strDrinkThumb'].values[0],
+        'idDrink': recipe['idDrink'].values[0]
+    }
+    return render_template('swipe.html', recipe=recipe)
 
 
 @app.route('/favorites')
@@ -320,5 +324,27 @@ def check_favorite_exists(user_id, cocktail_id):
         conn.close()
 
 
+@app.route('/')
+def index():
+    return redirect(url_for('login'))
+
+
+def init_table_coktail():
+    load_dotenv()
+    db_config = {
+        'host': os.getenv('POSTGRES_HOST'),
+        'database': os.getenv('POSTGRES_DB'),
+        'user': os.getenv('POSTGRES_USER'),
+        'password': os.getenv('POSTGRES_PASSWORD')
+    }
+    db_connection = f"postgresql://{db_config['user']}:{db_config['password']}@{db_config['host']}/{db_config['database']}"
+    engine = create_engine(db_connection)
+
+
+    df_co = pd.read_csv('all_drinks.csv')
+
+    # Insérer les données dans PostgreSQL
+    df_co.to_sql('cocktails', engine, if_exists='append', index=False)
 if __name__ == '__main__':
+    #init_table_coktail()
     app.run(host='0.0.0.0', port=5000, debug=True)
